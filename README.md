@@ -1,4 +1,4 @@
-# Segatools
+# SegaTools TeknoParrot fork
 
 ## Compiling on Windows:
 ### Prerequisites 
