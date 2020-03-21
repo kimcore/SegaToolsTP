@@ -26,7 +26,6 @@ if not exist node_modules (
     echo npm install -g windows-build-tools
     echo.
 
-    pause
     call npm install
 
     if errorlevel 1 (
