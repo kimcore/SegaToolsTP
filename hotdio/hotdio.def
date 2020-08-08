@@ -1,0 +1,8 @@
+LIBRARY hotdio
+
+EXPORTS
+    hotd_io_get_gamebtns
+    hotd_io_get_lever
+    hotd_io_get_opbtns
+    hotd_io_init
+    hotd_io_poll
