@@ -33,4 +33,4 @@ meson --backend vs2019 --cross cross-mingw-64.txt _build64
 ```
 (substituting vs2019 for any version from vs2015 to 2019 as needed).
 
-I personally couldn't get it to compile using VS, so I recommend making the VS projects go to `_build64VS` instead of `_build64`, that way you can make changes inside Visual Studio, then compile using ninja in the `_build64` folder
+I personally couldn't get it to compile using VS, so I recommend making the VS projects go to `_build64VS` instead of `_build64`, that way you can make changes inside Visual Studio, then compile using ninja in the `_build64` folder.
