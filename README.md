@@ -1,6 +1,7 @@
 # SegaTools TeknoParrot fork
 
 ## Compiling on Windows:
+
 ### Prerequisites 
 Download MinGW-W64 from [SourceForge](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/)
 
