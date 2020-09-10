@@ -22,10 +22,8 @@ if not exist node_modules (
     echo The server's dependencies will now be installed.
     echo This process requires an internet connection and may take some time.
     echo.
-    echo NOTE: If install fails try running the following command as admin:
-    echo npm install -g windows-build-tools
-    echo.
 
+    pause
     call npm install
 
     if errorlevel 1 (
@@ -47,4 +45,5 @@ set DEBUG=app:*
 node --tls-min-v1.0 .\bin\index.js
 
 :end
-exit
+echo.
+pause
