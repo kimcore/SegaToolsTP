@@ -27,6 +27,16 @@ static BOOL WINAPI hook_CreateDirectoryW(
         const wchar_t *lpFileName,
         SECURITY_ATTRIBUTES *lpSecurityAttributes);
 
+static BOOL WINAPI hook_CreateDirectoryExA(
+        const char *lpTemplateDirectory,
+        const char *lpNewDirectory,
+        SECURITY_ATTRIBUTES *lpSecurityAttributes);
+
+static BOOL WINAPI hook_CreateDirectoryExW(
+        const wchar_t *lpTemplateDirectory,
+        const wchar_t *lpNewDirectory,
+        SECURITY_ATTRIBUTES *lpSecurityAttributes);
+
 static HANDLE WINAPI hook_CreateFileA(
         const char *lpFileName,
         uint32_t dwDesiredAccess,
@@ -91,6 +101,16 @@ static BOOL (WINAPI *next_CreateDirectoryA)(
 
 static BOOL (WINAPI *next_CreateDirectoryW)(
         const wchar_t *lpFileName,
+        SECURITY_ATTRIBUTES *lpSecurityAttributes);
+
+static BOOL (WINAPI *next_CreateDirectoryExA)(
+        const char *lpTemplateDirectory,
+        const char *lpNewDirectory,
+        SECURITY_ATTRIBUTES *lpSecurityAttributes);
+
+static BOOL (WINAPI *next_CreateDirectoryExW)(
+        const wchar_t *lpTemplateDirectory,
+        const wchar_t *lpNewDirectory,
         SECURITY_ATTRIBUTES *lpSecurityAttributes);
 
 static HANDLE (WINAPI *next_CreateFileA)(
@@ -160,6 +180,14 @@ static const struct hook_symbol path_hook_syms[] = {
         .name   = "CreateDirectoryW",
         .patch  = hook_CreateDirectoryW,
         .link   = (void **) &next_CreateDirectoryW,
+    }, {
+        .name   = "CreateDirectoryExA",
+        .patch  = hook_CreateDirectoryExA,
+        .link   = (void **) &next_CreateDirectoryExA,
+    }, {
+        .name   = "CreateDirectoryExW",
+        .patch  = hook_CreateDirectoryExW,
+        .link   = (void **) &next_CreateDirectoryExW,
     }, {
         .name   = "CreateFileA",
         .patch  = hook_CreateFileA,
@@ -252,8 +280,13 @@ static void path_hook_init(void)
     path_hook_initted = true;
     InitializeCriticalSection(&path_hook_lock);
 
+    path_hook_insert_hooks(NULL);
+}
+
+void path_hook_insert_hooks(HMODULE target)
+{
     hook_table_apply(
-            NULL,
+            target,
             "kernel32.dll",
             path_hook_syms,
             _countof(path_hook_syms));
@@ -465,6 +498,54 @@ static BOOL WINAPI hook_CreateDirectoryW(
     return ok;
 }
 
+static BOOL WINAPI hook_CreateDirectoryExA(
+        const char *lpTemplateDirectory,
+        const char *lpNewDirectory,
+        SECURITY_ATTRIBUTES *lpSecurityAttributes)
+{
+    char *trans;
+    BOOL ok;
+
+    ok = path_transform_a(&trans, lpNewDirectory);
+
+    if (!ok) {
+        return FALSE;
+    }
+
+    ok = next_CreateDirectoryExA(
+            lpTemplateDirectory,
+            trans ? trans : lpNewDirectory,
+            lpSecurityAttributes);
+
+    free(trans);
+
+    return ok;
+}
+
+static BOOL WINAPI hook_CreateDirectoryExW(
+        const wchar_t *lpTemplateDirectory,
+        const wchar_t *lpNewDirectory,
+        SECURITY_ATTRIBUTES *lpSecurityAttributes)
+{
+    wchar_t *trans;
+    BOOL ok;
+
+    ok = path_transform_w(&trans, lpNewDirectory);
+
+    if (!ok) {
+        return FALSE;
+    }
+
+    ok = next_CreateDirectoryExW(
+            lpTemplateDirectory,
+            trans ? trans : lpNewDirectory,
+            lpSecurityAttributes);
+
+    free(trans);
+
+    return ok;
+}
+
 /* Don't pull in the entire iohook framework just for CreateFileA/CreateFileW */
 
 static HANDLE WINAPI hook_CreateFileA(
@@ -668,6 +749,7 @@ static DWORD WINAPI hook_GetFileAttributesW(const wchar_t *lpFileName)
     }
 
     result = next_GetFileAttributesW(trans ? trans : lpFileName);
+
     free(trans);
 
     return result;

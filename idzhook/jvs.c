@@ -54,6 +54,7 @@ static struct io3 idz_jvs_io3;
 HRESULT idz_jvs_init(struct jvs_node **out)
 {
     HRESULT hr;
+
     assert(out != NULL);
 
     dprintf("JVS I/O: Starting Initial D Zero backend DLL\n");
@@ -70,7 +71,6 @@ HRESULT idz_jvs_init(struct jvs_node **out)
 
     return S_OK;
 }
-
 
 static void idz_jvs_read_switches(void *ctx, struct io3_switch_state *out)
 {
