@@ -23,7 +23,6 @@ if not exist node_modules (
     echo This process requires an internet connection and may take some time.
     echo.
 
-    pause
     call npm install
 
     if errorlevel 1 (
