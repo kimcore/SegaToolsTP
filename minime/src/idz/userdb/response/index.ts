@@ -1,11 +1,14 @@
 import { CheckTeamNameResponse } from "./checkTeamName";
 import { CreateAutoTeamResponse } from "./createAutoTeam";
+import { CreateProfileResponse } from "./createProfile";
 import { CreateTeamResponse } from "./createTeam";
 import { DiscoverProfileResponse } from "./discoverProfile";
 import { GenericResponse } from "./generic";
-import { Load2on2Response } from "./load2on2";
-import { LoadConfigResponse } from "./loadConfig";
-import { LoadConfigResponse2 } from "./loadConfig2";
+import {
+  Load2on2InfoResponse,
+  Load2on2RankingPointsResponse,
+} from "./load2on2";
+import { LoadConfigResponseA, LoadConfigResponseB } from "./loadConfig";
 import { LoadEventInfoResponse } from "./loadEventInfo";
 import { LoadGachaResponse } from "./loadGacha";
 import { LoadGarageResponse } from "./loadGarage";
@@ -34,12 +37,14 @@ import { UnlockProfileResponse } from "./unlockProfile";
 export type Response =
   | CheckTeamNameResponse
   | CreateAutoTeamResponse
+  | CreateProfileResponse
   | CreateTeamResponse
   | DiscoverProfileResponse
   | GenericResponse
-  | Load2on2Response
-  | LoadConfigResponse
-  | LoadConfigResponse2
+  | Load2on2InfoResponse
+  | Load2on2RankingPointsResponse
+  | LoadConfigResponseA
+  | LoadConfigResponseB
   | LoadEventInfoResponse
   | LoadGachaResponse
   | LoadGarageResponse

@@ -1,12 +1,11 @@
-import iconv from "iconv-lite";
-
 import { encodeBitmap } from "./_bitmap";
 import { encodeCar } from "./_car";
-import { encodeChara } from "./_chara";
+import { encodeChara1 } from "./_chara";
 import { encodeMission } from "./_mission";
-import { LoadProfileResponse2 } from "../response/loadProfile";
+import { LoadProfileResponse } from "../response/loadProfile";
+import { writeSjisStr } from "../../util/bin";
 
-export function loadProfile2(res: LoadProfileResponse2) {
+export function loadProfile2(res: LoadProfileResponse) {
   const buf = Buffer.alloc(0x0d30);
 
   // FLAMETHROWER ANALYSIS (watch out for C strings)
@@ -38,13 +37,21 @@ export function loadProfile2(res: LoadProfileResponse2) {
     }
   }
 
-  for (let i = 0; i < 9 && i < res.story.rows.length; i++) {
-    const row = res.story.rows[i];
+  for (let i = 0; i < 9; i++) {
+    const row = res.story.rows.get(i);
     const rowOffset = 0x0228 + i * 0x26;
 
-    for (let j = 0; j < 9 && j < row.cells.length; j++) {
-      const cell = row.cells[j];
+    if (row === undefined) {
+      continue;
+    }
+
+    for (let j = 0; j < 9; j++) {
+      const cell = row.cells.get(j);
       const cellOffset = rowOffset + j * 4;
+
+      if (cell === undefined) {
+        continue;
+      }
 
       buf.writeUInt16LE(cell.a, cellOffset + 0);
       buf.writeUInt16LE(cell.b, cellOffset + 2);
@@ -87,11 +94,11 @@ export function loadProfile2(res: LoadProfileResponse2) {
   buf.writeUInt32LE(res.settings.pack, 0x03d8);
   buf.writeUInt32LE(res.dpoint, 0x03e8);
   buf.writeUInt32LE(res.fame, 0x0404);
-  iconv.encode(res.name + "\0", "shift_jis").copy(buf, 0x03ee);
+  writeSjisStr(buf, 0x03ee, 0x40e, res.name);
   buf.writeUInt8(res.story.y, 0x0670);
   buf.writeUInt16LE(res.story.x, 0x06bc);
   encodeMission(res.missions.solo).copy(buf, 0x06e4);
-  encodeChara(res.chara).copy(buf, 0x070c);
+  encodeChara1(res.chara).copy(buf, 0x070c);
   encodeBitmap(res.titles, 0xb4).copy(buf, 0x720);
   buf.writeUInt8(res.settings.aura, 0x07d6);
   buf.writeUInt8(res.settings.paperCup, 0x07d9);

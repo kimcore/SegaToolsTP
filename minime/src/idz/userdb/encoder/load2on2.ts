@@ -1,25 +1,11 @@
 import {
-  Load2on2Response,
-  Load2on2Response1,
-  Load2on2Response2,
+  Load2on2InfoResponse,
+  Load2on2RankingPointsResponse,
 } from "../response/load2on2";
 
-export function load2on2(res: Load2on2Response): Buffer {
-  switch (res.format) {
-    case 1:
-      return load2on2_v1(res);
-
-    case 2:
-      return load2on2_v2(res);
-
-    default:
-      const exhaust: never = res;
-
-      throw new Error(`Unsupported 2on2 response format ${res["format"]}`);
-  }
-}
-
-function load2on2_v1(res: Load2on2Response1): Buffer {
+export function load2on2RankingPoints1(
+  res: Load2on2RankingPointsResponse
+): Buffer {
   const buf = Buffer.alloc(0x04c0);
 
   buf.writeInt16LE(0x00b1, 0x0000);
@@ -27,9 +13,26 @@ function load2on2_v1(res: Load2on2Response1): Buffer {
   return buf;
 }
 
-// Same size but presumably incompatible somehow
-function load2on2_v2(res: Load2on2Response2): Buffer {
+export function load2on2Info1(res: Load2on2InfoResponse): Buffer {
   const buf = Buffer.alloc(0x04c0);
+
+  buf.writeInt16LE(0x0133, 0x0000);
+
+  return buf;
+}
+
+export function load2on2RankingPoints2(
+  res: Load2on2RankingPointsResponse
+): Buffer {
+  const buf = Buffer.alloc(0x1290);
+
+  buf.writeInt16LE(0x00a4, 0x0000);
+
+  return buf;
+}
+
+export function load2on2Info2(res: Load2on2InfoResponse): Buffer {
+  const buf = Buffer.alloc(0x0540);
 
   buf.writeInt16LE(0x0133, 0x0000);
 

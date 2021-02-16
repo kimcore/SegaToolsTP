@@ -1,33 +1,35 @@
 import { car } from "./_car";
 import { mission } from "./_mission";
 import { BackgroundCode, CourseNo, TitleCode } from "../model/base";
-import { SaveProfileRequest2 } from "../request/saveProfile";
+import { StoryCell, StoryRow } from "../model/story";
+import { SaveProfileRequest } from "../request/saveProfile";
 import { bitmap } from "./_bitmap";
 import { AimeId } from "../../../model";
 
 saveProfile3.msgCode = 0x0138;
 saveProfile3.msgLen = 0x0a70;
 
-export function saveProfile3(buf: Buffer): SaveProfileRequest2 {
-  const storyRows = new Array();
+export function saveProfile3(buf: Buffer): SaveProfileRequest {
+  const storyRows = new Map<number, StoryRow>();
 
   // Story layout has changed somewhat...
 
   for (let i = 0; i < 27; i++) {
-    const cells = new Array();
+    const cells = new Map<number, StoryCell>();
     const rowOffset = 0x01ac + i * 0x18;
 
     for (let j = 0; j < 9; j++) {
       const a = buf.readUInt8(rowOffset + 0x00 + j);
       const b = buf.readUInt8(rowOffset + 0x09 + j);
-      const cell = { a, b };
+      const c = 0; // Added in idz2
+      const cell = { a, b, c };
 
-      cells.push(cell);
+      cells.set(j, cell);
     }
 
     const row = { cells };
 
-    storyRows.push(row);
+    storyRows.set(i, row);
   }
 
   const coursePlays = new Map<CourseNo, number>();
@@ -47,8 +49,8 @@ export function saveProfile3(buf: Buffer): SaveProfileRequest2 {
 
   return {
     type: "save_profile_req",
-    format: 2,
     aimeId: buf.readUInt32LE(0x0004) as AimeId,
+    version: 1,
     lv: buf.readUInt16LE(0x0026),
     exp: buf.readUInt32LE(0x0028),
     fame: buf.readUInt32LE(0x04fc),
@@ -96,6 +98,7 @@ export function saveProfile3(buf: Buffer): SaveProfileRequest2 {
       aura: buf.readUInt8(0x002c),
       paperCup: buf.readUInt8(0x00f6),
       gauges: buf.readUInt8(0x00f7),
+      drivingStyle: 0, // Not supported until idz2
     },
   };
 }

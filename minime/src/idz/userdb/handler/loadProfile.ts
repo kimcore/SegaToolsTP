@@ -6,9 +6,9 @@ export async function loadProfile(
   w: Repositories,
   req: LoadProfileRequest
 ): Promise<LoadProfileResponse> {
-  const { aimeId } = req;
+  const { aimeId, version } = req;
 
-  const profileId = await w.profile().find(aimeId);
+  const profileId = await w.profile().find(aimeId, version);
   const teamId = await w.teamMembers().findTeam(profileId);
   const leaderId = teamId && (await w.teamMembers().findLeader(teamId));
 
@@ -28,10 +28,12 @@ export async function loadProfile(
   const unlocks = await w.unlocks().load(profileId);
   const tickets = await w.tickets().load(profileId);
   const team = teamId && (await w.teams().load(teamId));
+  const stamps = await w.stamps().loadAll(profileId);
+  const selectedStamps = await w.stamps().loadSelection(profileId);
+  const weeklyMissions = await w.weeklyMissions().load(profileId);
 
   return {
     type: "load_profile_res",
-    format: req.format as any, // TS fart
     name: profile.name,
     aimeId,
     lv: profile.lv,
@@ -52,5 +54,8 @@ export async function loadProfile(
     story,
     unlocks,
     tickets,
+    stamps,
+    selectedStamps,
+    weeklyMissions,
   };
 }

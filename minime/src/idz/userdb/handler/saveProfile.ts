@@ -7,7 +7,7 @@ export async function saveProfile(
   req: SaveProfileRequest
 ): Promise<GenericResponse> {
   const now = new Date();
-  const profileId = await w.profile().find(req.aimeId);
+  const profileId = await w.profile().find(req.aimeId, req.version);
   const profile = await w.profile().load(profileId);
   const chara = await w.chara().load(profileId);
 
@@ -35,6 +35,18 @@ export async function saveProfile(
   await w.unlocks().save(profileId, req.unlocks);
   await w.settings().save(profileId, req.settings);
   await w.tickets().save(profileId, req.tickets);
+
+  if (req.selectedStamps) {
+    await w.stamps().saveSelection(profileId, req.selectedStamps);
+  }
+
+  if (req.stamps) {
+    await w.stamps().saveAll(profileId, req.stamps);
+  }
+
+  if (req.weeklyMissions) {
+    await w.weeklyMissions().save(profileId, req.weeklyMissions);
+  }
 
   return {
     type: "generic_res",

@@ -3,9 +3,8 @@ import { CreateProfileRequest } from "./createProfile";
 import { CreateTeamRequest } from "./createTeam";
 import { DiscoverProfileRequest } from "./discoverProfile";
 import { CreateAutoTeamRequest } from "./createAutoTeam";
-import { Load2on2Request } from "./load2on2";
-import { LoadConfigRequest } from "./loadConfig";
-import { LoadConfigRequest2 } from "./loadConfig2";
+import { Load2on2InfoRequest, Load2on2RankingPointsRequest } from "./load2on2";
+import { LoadConfigRequestA, LoadConfigRequestB } from "./loadConfig";
 import { LoadEventInfoRequest } from "./loadEventInfo";
 import { LoadGachaRequest } from "./loadGacha";
 import { LoadGarageRequest } from "./loadGarage";
@@ -21,7 +20,6 @@ import { LoadTopTenRequest } from "./loadTopTen";
 import { LockProfileRequest } from "./lockProfile";
 import { LockProfileExtendRequest } from "./lockProfileExtend";
 import { LockGarageRequest } from "./lockGarage";
-import { Message00AD } from "./msg00AD";
 import { SaveExpeditionRequest } from "./saveExpedition";
 import { SaveGarageRequest } from "./saveGarage";
 import { SaveNewCarRequest } from "./saveNewCar";
@@ -31,6 +29,7 @@ import { SaveStockerRequest } from "./saveStocker";
 import { SaveTeamBannerRequest } from "./saveTeamBanner";
 import { SaveTimeAttackRequest } from "./saveTimeAttack";
 import { SaveTopicRequest } from "./saveTopic";
+import { UnknownRequestA } from "./unknownA";
 import { UnlockProfileRequest } from "./unlockProfile";
 import { UpdateProvisionalStoreRankRequest } from "./updateProvisionalStoreRank";
 import { UpdateResultRequest } from "./updateResult";
@@ -47,9 +46,10 @@ export type Request =
   | CreateProfileRequest
   | CreateTeamRequest
   | DiscoverProfileRequest
-  | Load2on2Request
-  | LoadConfigRequest
-  | LoadConfigRequest2
+  | Load2on2InfoRequest
+  | Load2on2RankingPointsRequest
+  | LoadConfigRequestA
+  | LoadConfigRequestB
   | LoadEventInfoRequest
   | LoadGachaRequest
   | LoadGarageRequest
@@ -65,7 +65,6 @@ export type Request =
   | LockProfileRequest
   | LockProfileExtendRequest
   | LockGarageRequest
-  | Message00AD
   | SaveExpeditionRequest
   | SaveGarageRequest
   | SaveNewCarRequest
@@ -75,6 +74,7 @@ export type Request =
   | SaveTeamBannerRequest
   | SaveTimeAttackRequest
   | SaveTopicRequest
+  | UnknownRequestA
   | UnlockProfileRequest
   | UpdateProvisionalStoreRankRequest
   | UpdateResultRequest

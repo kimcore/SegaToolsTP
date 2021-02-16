@@ -1,12 +1,11 @@
-import iconv from "iconv-lite";
-
 import { encodeBitmap } from "./_bitmap";
 import { encodeCar } from "./_car";
-import { encodeChara } from "./_chara";
+import { encodeChara1 } from "./_chara";
 import { encodeMission } from "./_mission";
-import { LoadProfileResponse3 } from "../response/loadProfile";
+import { LoadProfileResponse } from "../response/loadProfile";
+import { writeSjisStr } from "../../util/bin";
 
-export function loadProfile3(res: LoadProfileResponse3) {
+export function loadProfile3(res: LoadProfileResponse) {
   const buf = Buffer.alloc(0x0ea0);
 
   // Initialize all TA grades to uhh... fuck knows
@@ -38,13 +37,21 @@ export function loadProfile3(res: LoadProfileResponse3) {
   // space for story cells, and 27 rows * 19 bytes per row = 513 bytes, which
   // is the max that will fit (the final byte of each row is unused).
 
-  for (let i = 0; i < 27 && i < res.story.rows.length; i++) {
-    const row = res.story.rows[i];
+  for (let i = 0; i < 27; i++) {
+    const row = res.story.rows.get(i);
     const rowOffset = 0x0256 + i * 0x13;
 
-    for (let j = 0; j < 9 && j < row.cells.length; j++) {
-      const cell = row.cells[j];
+    if (row === undefined) {
+      continue;
+    }
+
+    for (let j = 0; j < 9; j++) {
+      const cell = row.cells.get(j);
       const cellOffset = rowOffset + j * 2;
+
+      if (cell === undefined) {
+        continue;
+      }
 
       buf.writeUInt8(cell.a, cellOffset + 0);
       buf.writeUInt8(cell.b, cellOffset + 1);
@@ -87,11 +94,11 @@ export function loadProfile3(res: LoadProfileResponse3) {
   buf.writeUInt32LE(res.settings.pack, 0x04b4);
   buf.writeUInt32LE(res.dpoint, 0x04c4);
   buf.writeUInt32LE(res.fame, 0x04e0);
-  iconv.encode(res.name + "\0", "shift_jis").copy(buf, 0x04ca);
+  writeSjisStr(buf, 0x04ca, 0x04ea, res.name);
   buf.writeUInt8(res.story.y, 0x080c);
   buf.writeUInt16LE(res.story.x, 0x0828);
   encodeMission(res.missions.solo).copy(buf, 0x0858);
-  encodeChara(res.chara).copy(buf, 0x0880);
+  encodeChara1(res.chara).copy(buf, 0x0880);
   encodeBitmap(res.titles, 0xb4).copy(buf, 0x0894);
   buf.writeUInt8(res.settings.aura, 0x094a);
   buf.writeUInt8(res.settings.paperCup, 0x094d);

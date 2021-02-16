@@ -49,9 +49,12 @@ export interface FlagRepository<T extends number> {
 }
 
 export interface ProfileRepository {
-  find(aimeId: AimeId): Promise<Id<Model.Profile>>;
+  find(aimeId: AimeId, version: number): Promise<Id<Model.Profile>>;
 
-  peek(aimeId: AimeId): Promise<Id<Model.Profile> | undefined>;
+  peek(
+    aimeId: AimeId,
+    version: number
+  ): Promise<Id<Model.Profile> | undefined>;
 
   load(id: Id<Model.Profile>): Promise<Model.Profile>;
 
@@ -60,8 +63,27 @@ export interface ProfileRepository {
   create(profile: Model.Profile): Promise<Id<Model.Profile>>;
 }
 
+export interface StampsRepository {
+  loadSelection(profileId: Id<Model.Profile>): Promise<Model.SelectedStamps>;
+
+  loadAll(profileId: Id<Model.Profile>): Promise<Set<Model.StampCode>>;
+
+  saveAll(
+    profileId: Id<Model.Profile>,
+    items: Set<Model.StampCode>
+  ): Promise<void>;
+
+  saveSelection(
+    profileId: Id<Model.Profile>,
+    selection: Model.SelectedStamps
+  ): Promise<void>;
+}
+
 export interface TeamRepository {
-  find(extId: Model.ExtId<Model.Team>): Promise<Id<Model.Team>>;
+  find(
+    extId: Model.ExtId<Model.Team>,
+    version: number
+  ): Promise<Id<Model.Team>>;
 
   load(id: Id<Model.Team>): Promise<Model.Team>;
 
@@ -73,7 +95,7 @@ export interface TeamRepository {
 }
 
 export interface TeamAutoRepository {
-  peek(): Promise<[Model.TeamAuto, Id<Model.Team>] | undefined>;
+  peek(version: number): Promise<[Model.TeamAuto, Id<Model.Team>] | undefined>;
 
   push(teamId: Id<Model.Team>, auto: Model.TeamAuto): Promise<void>;
 }
@@ -121,6 +143,7 @@ export interface TopTenResult {
 
 export interface TimeAttackRepository {
   loadTop(
+    version: number,
     routeNo: Model.RouteNo,
     minTimestamp: Date,
     limit: number
@@ -131,6 +154,15 @@ export interface TimeAttackRepository {
   save(
     profileId: Id<Model.Profile>,
     score: Model.TimeAttackScore
+  ): Promise<void>;
+}
+
+export interface WeeklyMissionsRepository {
+  load(profileId: Id<Model.Profile>): Promise<Model.WeeklyMissions>;
+
+  save(
+    profileId: Id<Model.Profile>,
+    weeklyMissions: Model.WeeklyMissions
   ): Promise<void>;
 }
 
@@ -146,9 +178,13 @@ export interface Repositories {
   // not really a facet tbh
   missions(): FacetRepository<Model.MissionState>;
 
+  myChara(): FlagRepository<Model.MyCharaCode>;
+
   profile(): ProfileRepository;
 
   settings(): FacetRepository<Model.Settings>;
+
+  stamps(): StampsRepository;
 
   // Also not a facet. w/e one step at a time.
   story(): FacetRepository<Model.Story>;
@@ -168,4 +204,6 @@ export interface Repositories {
   titles(): FlagRepository<Model.TitleCode>;
 
   unlocks(): FacetRepository<Model.Unlocks>;
+
+  weeklyMissions(): WeeklyMissionsRepository;
 }

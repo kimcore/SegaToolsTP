@@ -1,21 +1,22 @@
 import { MissionState } from "../model/mission";
 import { Profile } from "../model/profile";
 import { Settings } from "../model/settings";
-import { Story } from "../model/story";
+import { Story, StoryRow } from "../model/story";
 import { Unlocks } from "../model/unlocks";
 import { CreateProfileRequest } from "../request/createProfile";
-import { GenericResponse } from "../response/generic";
+import { CreateProfileResponse } from "../response/createProfile";
 import { Repositories } from "../repo";
 
 export async function createProfile(
   w: Repositories,
   req: CreateProfileRequest
-): Promise<GenericResponse> {
-  const { aimeId, name } = req;
+): Promise<CreateProfileResponse> {
+  const { aimeId, version, name } = req;
   const now = new Date();
 
   const profile: Profile = {
     aimeId,
+    version,
     name,
     lv: 1,
     exp: 0,
@@ -27,8 +28,19 @@ export async function createProfile(
   };
 
   const missions: MissionState = { team: [], solo: [] };
-  const settings: Settings = { music: 0, pack: 13640, aura: 0, paperCup: 0, gauges: 5 };
-  const story: Story = { x: 0, y: 0, rows: [] };
+  const settings: Settings = {
+    music: 0,
+    pack: 13640,
+    aura: 0,
+    paperCup: 0,
+    gauges: 5,
+    drivingStyle: 0, // Not supported until idz2
+  };
+  const story: Story = {
+    x: 0,
+    y: 0,
+    rows: new Map<number, StoryRow>(),
+  };
   const unlocks: Unlocks = {
     auras: 1,
     cup: 0,
@@ -51,7 +63,7 @@ export async function createProfile(
   await w.teamReservations().commitHack(aimeId);
 
   return {
-    type: "generic_res",
-    status: aimeId, // "Generic response" my fucking *ass*
+    type: "create_profile_res",
+    aimeId: aimeId,
   };
 }

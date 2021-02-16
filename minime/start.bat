@@ -45,4 +45,3 @@ node --tls-min-v1.0 .\bin\index.js
 
 :end
 echo.
-pause
